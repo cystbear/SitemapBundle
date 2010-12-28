@@ -77,17 +77,62 @@ class Url
     }
 
     /**
+     * @param array $images
+     */
+    public function addImages(array $images)
+    {
+        $this->imagesClear();
+        foreach($images as $image) {
+            $this->addImage($image['loc'], $image['info']);
+        }
+
+        return count($this->getImages());
+    }
+
+    public function imagesClear()
+    {
+        $this->images = array();
+    }
+
+    /**
      * @param string $loc
-     * @throws \InvalidArgumentException
+     * @param array $info
      */
     public function addImage($loc, array $info)
     {
-        $image = $this->prepareImage($loc, $info);
+        $image = $this->initializeImage($loc, $info);
         $this->storeImage($image);
+    }
 
-        // TODO: decide: return image object or not
+    /**
+     * @param Image $image
+     */
+    public function storeImage(Image $image)
+    {
+        $this->images[] = $image;
+    }
+
+    // TODO: move me at right position in class
+    // method scope order convention is next: public => protected => private
+    // regarding http://docs.symfony-reloaded.org/contributing/code/standards.html#structure last point
+
+    /**
+     * @param string $loc
+     * @param array $info
+     */
+    protected function initializeImage($loc, array $info)
+    {
+        $imageClass = $this->getImageClass();
+        $image = new $imageClass($loc);
+        foreach (array('caption', 'geolocation', 'title', 'license') as $property) {
+            if (isset($info[$property])) {
+                $image->{'set' . \ucfirst($property)}($info[$property]);
+            }
+        }
+
         return $image;
     }
+
     /**
      * @return string
      */
@@ -98,11 +143,6 @@ class Url
     public function getImages()
     {
         return $this->images;
-    }
-
-    public function storeImage(Image $image)
-    {
-        $this->images[] = $image;
     }
 
     /**
@@ -172,18 +212,4 @@ class Url
     {
         return number_format($this->priority, 1);
     }
-
-    protected function prepareImage($loc, array $info)
-    {
-        $imageClass = $this->getImageClass();
-        $image = new $imageClass($loc);
-        foreach (array('caption', 'geolocation', 'title', 'license') as $property) {
-            if (isset($info[$property])) {
-                $image->{'set' . \ucfirst($property)}($info[$property]);
-            }
-        }
-
-        return $image;
-    }
-
 }

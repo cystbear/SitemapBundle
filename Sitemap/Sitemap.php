@@ -3,7 +3,6 @@
 namespace Bundle\SitemapBundle\Sitemap;
 
 use Bundle\SitemapBundle\Sitemap\Storage\Storage;
-use Bundle\SitemapBundle\Sitemap\Url;
 
 /**
  * Sitemap
@@ -77,13 +76,11 @@ class Sitemap
                 $url->{'set' . ucfirst($prop)}($info[$prop]);
             }
         }
+        $images = isset($info['images']) ? $info['images'] : array();
+        $url->addImages($images);
+        $this->storage->save($url);
 
         return $url;
-    }
-
-    public function save(Url $url)
-    {
-        $this->storage->save($url);
     }
 
     /**
