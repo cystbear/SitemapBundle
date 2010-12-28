@@ -2,6 +2,8 @@
 
 namespace Bundle\SitemapBundle\Sitemap;
 
+use Doctrine\Common\Collections\ArrayCollection;
+
 use Bundle\SitemapBundle\Exception;
 use Bundle\SitemapBundle\Sitemap\Image;
 
@@ -39,9 +41,9 @@ class Url
      */
     protected $imageClass;
     /**
-     * @var array
+     * @EmbedMany(targetDocument="Bundle\SitemapBundle\Sitemap\Image")
      */
-    protected $images = array();
+    protected $images;
 
     /**
      * @var string
@@ -73,7 +75,7 @@ class Url
         }
         $this->loc = $loc;
         $this->imageClass = self::DEFAULT_IMAGE_CLASS;
-        $this->images = array();
+        $this->images = new ArrayCollection();
     }
 
     /**
@@ -91,7 +93,7 @@ class Url
 
     public function imagesClear()
     {
-        $this->images = array();
+        $this->images = new ArrayCollection();
     }
 
     /**
@@ -109,7 +111,7 @@ class Url
      */
     public function storeImage(Image $image)
     {
-        $this->images[] = $image;
+        $this->getImages()->add($image);
     }
 
     // TODO: move me at right position in class
@@ -133,16 +135,17 @@ class Url
         return $image;
     }
 
+    public function getImages()
+    {
+        return $this->images ?: $this->images = new ArrayCollection();
+    }
+
     /**
      * @return string
      */
     public function getImageClass()
     {
         return $this->imageClass;
-    }
-    public function getImages()
-    {
-        return $this->images;
     }
 
     /**

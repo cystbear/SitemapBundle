@@ -13,6 +13,10 @@ use Bundle\SitemapBundle\Exception;
  * @copyright (c) 2010 OpenSky Project Inc
  * @license http://www.gnu.org/licenses/agpl.txt GNU Affero General Public License
  */
+
+/**
+ * @EmbeddedDocument
+ */
 class Image
 {
     const URL_PATTERN = '~^
