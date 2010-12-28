@@ -3,6 +3,7 @@
 namespace Bundle\SitemapBundle\Sitemap;
 
 use Bundle\SitemapBundle\Exception;
+use Bundle\SitemapBundle\Sitemap\Image;
 
 /**
  * Url
@@ -15,6 +16,8 @@ use Bundle\SitemapBundle\Exception;
  */
 class Url
 {
+    const DEFAULT_IMAGE_CLASS = 'Bundle\SitemapBundle\Sitemap\Image';
+
     const PATTERN = '~^
       (http|https)://                         # protocol
       (
@@ -30,6 +33,15 @@ class Url
     const MONTHLY = 'monthly';
     const YEARLY = 'yearly';
     const LASTMOD_FORMAT = 'Y-m-d';
+
+    /**
+     * @var string
+     */
+    protected $imageClass;
+    /**
+     * @var array
+     */
+    protected $images = array();
 
     /**
      * @var string
@@ -60,6 +72,37 @@ class Url
             throw new Exception\InvalidArgumentException($loc . ' is not valid url location');
         }
         $this->loc = $loc;
+        $this->imageClass = self::DEFAULT_IMAGE_CLASS;
+        $this->images = array();
+    }
+
+    /**
+     * @param string $loc
+     * @throws \InvalidArgumentException
+     */
+    public function addImage($loc, array $info)
+    {
+        $image = $this->prepareImage($loc, $info);
+        $this->storeImage($image);
+
+        // TODO: decide: return image object or not
+        return $image;
+    }
+    /**
+     * @return string
+     */
+    public function getImageClass()
+    {
+        return $this->imageClass;
+    }
+    public function getImages()
+    {
+        return $this->images;
+    }
+
+    public function storeImage(Image $image)
+    {
+        $this->images[] = $image;
     }
 
     /**
@@ -128,6 +171,19 @@ class Url
     public function getPriority()
     {
         return number_format($this->priority, 1);
+    }
+
+    protected function prepareImage($loc, array $info)
+    {
+        $imageClass = $this->getImageClass();
+        $image = new $imageClass($loc);
+        foreach (array('caption', 'geolocation', 'title', 'license') as $property) {
+            if (isset($info[$property])) {
+                $image->{'set' . \ucfirst($property)}($info[$property]);
+            }
+        }
+
+        return $image;
     }
 
 }
