@@ -21,6 +21,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 class MongoDB implements Storage
 {
     const URL_CLASS = 'Bundle\SitemapBundle\Sitemap\Url';
+    const IMAGE_CLASS = 'Bundle\SitemapBundle\Sitemap\Image';
 
     /**
      * @var Doctrine\ODM\MongoDB\DocumentManager
@@ -51,6 +52,12 @@ class MongoDB implements Storage
     public function register(ClassMetadata $cm, ClassMetadataFactory $cmf)
     {
         $cmf->setMetadataFor(self::URL_CLASS, $cm);
+    }
+
+    // @Experimental
+    public function registerImage(ClassMetadata $cm, ClassMetadataFactory $cmf)
+    {
+        $cmf->setMetadataFor(self::IMAGE_CLASS, $cm);
     }
 
     /**

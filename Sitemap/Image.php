@@ -2,14 +2,13 @@
 
 namespace Bundle\SitemapBundle\Sitemap;
 
-use Bundle\SitemapBundle\Exception;
-
 /**
  * Image
  *
  * @package OpenSky SitemapBundle
  * @version $Id$
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
+ * @author Oleg Zinchenko <olegz@default-value.com>
  * @copyright (c) 2010 OpenSky Project Inc
  * @license http://www.gnu.org/licenses/agpl.txt GNU Affero General Public License
  */
@@ -19,49 +18,32 @@ use Bundle\SitemapBundle\Exception;
  */
 class Image
 {
-    const URL_PATTERN = '~^
-      (http|https)://                         # protocol
-      (
-        ([a-z0-9-]+\.)+[a-z]{2,6}             # a domain name
-          |                                   # or
-        \d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}    # a IP address
-      )
-      (:[0-9]+)?                              # a port (optional)
-      (/?|/\S+)                               # a /, nothing or a / with something
-    $~ix';
-
     /**
      * @var string
      */
-    protected $loc;
-    /**
-     *
-     * @var string
-     */
-    protected $caption;
-    /**
-     *
-     * @var string
-     */
-    protected $geolocation;
+    public $loc;
     /**
      * @var string
      */
-    protected $title;
+    public $caption;
     /**
      * @var string
      */
-    protected $license;
+    public $geolocation;
+    /**
+     * @var string
+     */
+    public $title;
+    /**
+     * @var string
+     */
+    public $license;
 
     /**
      * @param string $loc
-     * @throws \InvalidArgumentException
      */
     public function __construct($loc)
     {
-        if (!preg_match(self::URL_PATTERN, $loc)) {
-            throw new Exception\InvalidArgumentException($loc . ' is not valid url location');
-        }
         $this->loc = $loc;
     }
 
@@ -72,6 +54,7 @@ class Image
     {
         return $this->loc;
     }
+
     /**
      * @param string $caption
      */

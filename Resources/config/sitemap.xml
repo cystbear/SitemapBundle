@@ -8,6 +8,7 @@
         <parameter key="sitemap.request.parser.class">Bundle\SitemapBundle\Listener\RequestParser</parameter>
         <parameter key="sitemap.response.filter.class">Bundle\SitemapBundle\Listener\ResponseFilter</parameter>
         <parameter key="sitemap.url.class">Bundle\SitemapBundle\Sitemap\Url</parameter>
+        <parameter key="sitemap.image.class">Bundle\SitemapBundle\Sitemap\Image</parameter>
         <parameter key="sitemap_exporter.class">Bundle\SitemapBundle\Sitemap\SitemapExporter</parameter>
         <parameter key="sitemap.dumper.odm.mongodb.class">Bundle\SitemapBundle\Dumper\Doctrine\ODM\MongoDB</parameter>
         <parameter key="sitemap.sitemap.storage.odm.mongodb.class">Bundle\SitemapBundle\Sitemap\Storage\Doctrine\ODM\MongoDB</parameter>
@@ -36,6 +37,15 @@
                     <service factory-service="doctrine.odm.mongodb.document_manager" factory-method="getMetadataFactory" />
                 </argument>
             </call>
+
+            <!-- @Experimental -->
+            <call method="registerImage">
+                <argument type="service" id="sitemap.class_metadata.image" />
+                <argument type="service">
+                    <service factory-service="doctrine.odm.mongodb.document_manager" factory-method="getMetadataFactory" />
+                </argument>
+            </call>
+
             <call method="setRepository">
                 <argument type="service">
                     <service factory-service="doctrine.odm.mongodb.document_manager" factory-method="getRepository">
@@ -44,6 +54,7 @@
                 </argument>
             </call>
         </service>
+
         <service id="sitemap.class_metadata" class="Doctrine\ODM\MongoDB\Mapping\ClassMetadata">
             <argument type="constant">Bundle\SitemapBundle\Sitemap\Storage\Doctrine\ODM\MongoDB::URL_CLASS</argument>
             <call method="setDatabase"><argument>%sitemap.sitemap.storage.odm.mongodb.db%</argument></call>
@@ -73,7 +84,49 @@
                     <argument key="type">float</argument>
                 </argument>
             </call>
+            <call method="mapManyEmbedded">
+                <argument type="collection">
+                    <argument key="fieldName">images</argument>
+                    <argument key="targetDocument">%sitemap.image.class%</argument>
+                </argument>
+            </call>
         </service>
+
+        <!-- @Experimental -->
+        <service id="sitemap.class_metadata.image" class="Doctrine\ODM\MongoDB\Mapping\ClassMetadata">
+            <argument type="constant">Bundle\SitemapBundle\Sitemap\Storage\Doctrine\ODM\MongoDB::IMAGE_CLASS</argument>
+            <call method="mapField">
+                <argument type="collection">
+                    <argument key="fieldName">loc</argument>
+                    <argument key="type">string</argument>
+                </argument>
+            </call>
+            <call method="mapField">
+                <argument type="collection">
+                    <argument key="fieldName">caption</argument>
+                    <argument key="type">string</argument>
+                </argument>
+            </call>
+            <call method="mapField">
+                <argument type="collection">
+                    <argument key="fieldName">geolocation</argument>
+                    <argument key="type">string</argument>
+                </argument>
+            </call>
+            <call method="mapField">
+                <argument type="collection">
+                    <argument key="fieldName">title</argument>
+                    <argument key="type">string</argument>
+                </argument>
+            </call>
+           <call method="mapField">
+                <argument type="collection">
+                    <argument key="fieldName">license</argument>
+                    <argument key="type">string</argument>
+                </argument>
+            </call>
+        </service>
+
         <service id="sitemap.listener" class="%sitemap.listener.class%">
             <tag name="kernel.listener" />
             <argument type="service" id="sitemap.sitemap" />

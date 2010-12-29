@@ -41,7 +41,7 @@ class Url
      */
     protected $imageClass;
     /**
-     * @EmbedMany(targetDocument="Bundle\SitemapBundle\Sitemap\Image")
+     * @EmbedMany
      */
     protected $images;
 
